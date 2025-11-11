@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,35 +11,39 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final List<String> _cards = ['♠', '♣', '♥', '♦', '🃏'];
 
-  String _FirstCard = '❓';
-  String _SecondCard = '❓';
-  String _ThirdCard = '❓';
+  String _firstCard = '❓';
+  String _secondCard = '❓';
+  String _thirdCard = '❓';
+  String _message = '';
 
   void selectCard() {
-    final RandomIndex = (DateTime.now().millisecondsSinceEpoch % 5);
-    final FirstCard = _cards[RandomIndex];
-    final SecondCard = _cards[RandomIndex];
-    final ThirdCard = _cards[RandomIndex];
-
-    if (FirstCard == _cards.last ||
-        SecondCard == _cards.last ||
-        ThirdCard == _cards.last) {
-      print("🃏 The Joker is here!");
-    }
+    final random = Random();
+    final firstCard = _cards[random.nextInt(_cards.length)];
+    final secondCard = _cards[random.nextInt(_cards.length)];
+    final thirdCard = _cards[random.nextInt(_cards.length)];
 
     setState(() {
-      _FirstCard = FirstCard;
-      _SecondCard = SecondCard;
-      _ThirdCard = ThirdCard;
-    });
+      _firstCard = firstCard;
+      _secondCard = secondCard;
+      _thirdCard = thirdCard;
 
-    void _reset() {
-      setState(() {
-        String _FirstCard = '❓';
-        String _SecondCard = '❓';
-        String _ThirdCard = '❓';
-      });
-    }
+      if (_cards.last == firstCard ||
+          _cards.last == secondCard ||
+          _cards.last == thirdCard) {
+        _message = '🃏 The Joker is here!';
+      } else {
+        _message = '';
+      }
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _firstCard = '❓';
+      _secondCard = '❓';
+      _thirdCard = '❓';
+      _message = '';
+    });
   }
 
   @override
@@ -49,36 +54,52 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              alignment: Alignment.topCenter,
+            const Padding(
               padding: EdgeInsets.only(bottom: 70),
               child: Text(
                 'Select Cards!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [SizedBox(width: 8), Text(_FirstCard)],
+              children: [
+                Text(_firstCard, style: const TextStyle(fontSize: 40)),
+                const SizedBox(width: 20),
+                Text(_secondCard, style: const TextStyle(fontSize: 40)),
+                const SizedBox(width: 20),
+                Text(_thirdCard, style: const TextStyle(fontSize: 40)),
+              ],
             ),
-            SizedBox(width: 8),
+            const SizedBox(height: 30),
+            Text(
+              _message,
+              style: const TextStyle(
+                color: Colors.yellow,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text(_SecondCard)],
+              children: [
+                ElevatedButton(
+                  onPressed: selectCard,
+                  child: const Text('Select Cards'),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: _reset,
+                  child: const Text('Reset'),
+                ),
+              ],
             ),
-            SizedBox(width: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text(_ThirdCard)],
-            ),
-            ElevatedButton(onPressed: selectCard, child: Text('Select Cards'))
-            SizedBox(width: 8)
-            ElevatedButton(onPressed: _reset, child: Text('Reset'))
           ],
         ),
       ),
